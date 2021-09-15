@@ -1,4 +1,6 @@
-.Carousel {
+.Carousel{
 text-align: center;
-width: 55%;
+width: 200px;
+text-align: center;
+display:inline-block;
 }

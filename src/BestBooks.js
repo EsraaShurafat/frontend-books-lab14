@@ -1,16 +1,19 @@
 import React from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Card from 'react-bootstrap/Card';
-import Carousel from 'react-bootstrap/Carousel';
+// import Carousel from 'react-bootstrap/Carousel';
+import Button from 'react-bootstrap/Button';
 import './BestBooks.css';
 import {withAuth0} from '@auth0/auth0-react';
 import axios from 'axios';
+import BookFormModal from './commponents/BookFormModal';
 
 
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+    formShow: false,
       books: []
     }
   }
@@ -30,8 +33,51 @@ class BestBooks extends React.Component {
     .catch (err =>{
       console.log('error');
     })
-  }
+  };
 
+  addBook = (event) =>{
+    event.preventDefault();
+    const { user } = this.props.auth0;
+    const email = user.email;
+    const obj = {
+        title: event.target.title.value,
+        description: event.target.description.value,
+        status:event.target.status.value,
+        authoremail:email
+    }
+    console.log(obj);
+
+axios
+.post(`http://localhost:3001/addBook`,obj)
+.then(result =>{
+  this.setState({
+    books: result.data
+  })
+})
+.catch(err=>{
+  console.log('Error on adding data');
+})
+}
+
+formShow =()=>{
+  this.setState({formShow: !this.state.formShow});
+};
+
+
+  // deleteCat = (id) =>{
+  //   const { user } = this.props.auth0;
+  //   const email = user.email;
+  //   axios
+  //   .delete(`http://localhost:3010/deleteCat/${id}?email=${email}`)
+  //   .then(result =>{
+  //     this.setState({
+  //       favCatsArr: result.data
+  //     })
+  //   })
+  //   .catch(err=>{
+  //     console.log('error in deleting cat');
+  //   })
+  // }
 
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
 
@@ -40,29 +86,42 @@ class BestBooks extends React.Component {
 
     return (
       <>
-        <Card>
+      
+       <Button variant="primary" onClick={this.formShow}>Add Book</Button>{' '}
+      
+        <Card className='card'>
           <Card.Body> <h1>My Favorite Books</h1>
             <p>
               This is a collection of my favorite books
             </p></Card.Body>
         </Card>
+        {this.state.formShow && (  
+        <>
+        <BookFormModal 
+        addBook={this.addBook}
+        show={this.state.formShow}
+        formShow={this.formShow}
+        />
+           </>
+        )}
+      
 
       
  
     {this.state.books.map(item =>{return( 
-    <Carousel className='Carousel ' >
-  <Carousel.Item>
+    <Card className='Carousel ' >
+  <Card.Body>
     <img 
       className="d-block w-100"
       src={item.status}
       alt="First slide"
     />
-    <Carousel.Caption>
+    <Card.Body>
       <h3>{item.title}</h3>
       <p>{item.description}</p>
-    </Carousel.Caption>
-  </Carousel.Item>
-</Carousel>)})}  
+    </Card.Body>
+  </Card.Body>
+</Card>)})}  
  
 
 
