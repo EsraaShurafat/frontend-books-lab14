@@ -22,7 +22,7 @@ class BestBooks extends React.Component {
     const { user } = this.props.auth0;
     const email = user.email;
     axios
-    .get(`http://localhost:3001/books?email=${email}`)
+    .get(`https://lab-12-books.herokuapp.com/books?email=${email}`)
     .then( result =>{
       console.log(result.data);
       this.setState({
@@ -48,7 +48,7 @@ class BestBooks extends React.Component {
     console.log(obj);
 
 axios
-.post(`http://localhost:3001/addBook`,obj)
+.post(`https://lab-12-books.herokuapp.com/addBook`,obj)
 .then(result =>{
   this.setState({
     books: result.data
@@ -64,20 +64,21 @@ formShow =()=>{
 };
 
 
-  // deleteCat = (id) =>{
-  //   const { user } = this.props.auth0;
-  //   const email = user.email;
-  //   axios
-  //   .delete(`http://localhost:3010/deleteCat/${id}?email=${email}`)
-  //   .then(result =>{
-  //     this.setState({
-  //       favCatsArr: result.data
-  //     })
-  //   })
-  //   .catch(err=>{
-  //     console.log('error in deleting cat');
-  //   })
-  // }
+  deleteBook = (id) =>{
+    
+    const { user } = this.props.auth0;
+    const email = user.email;
+    axios
+    .delete(`https://lab-12-books.herokuapp.com/deleteBook/${id}?email=${email}`)
+    .then(result =>{
+      this.setState({
+        books: result.data
+      })
+    })
+    .catch(err=>{
+      console.log('error in deleting book');
+    })
+  }
 
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
 
@@ -119,6 +120,7 @@ formShow =()=>{
     <Card.Body>
       <h3>{item.title}</h3>
       <p>{item.description}</p>
+      <button onClick={()=>this.deleteBook(item._id)} >Delete Book</button>
     </Card.Body>
   </Card.Body>
 </Card>)})}  
