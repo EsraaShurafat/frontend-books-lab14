@@ -7,16 +7,24 @@ import './BestBooks.css';
 import {withAuth0} from '@auth0/auth0-react';
 import axios from 'axios';
 import BookFormModal from './commponents/BookFormModal';
+import UpdateBooks from './UpdateBooks';
+import Books from './Books';
 
 
 class BestBooks extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-    formShow: false,
-      books: []
+    formShowMobal: false,
+      books: [],
+      showFlag :false,
+      title : '',
+      description: '',
+      BookId : '',
+      status:''
     }
   }
+//fixing
 
   componentDidMount = () =>{
     const { user } = this.props.auth0;
@@ -59,9 +67,17 @@ axios
 })
 }
 
-formShow =()=>{
-  this.setState({formShow: !this.state.formShow});
-};
+formShowMobalfun =()=>{
+  this.setState({
+    formShowMobal:true,
+  })
+}
+
+closeModal =()=>{
+  this.setState({
+    formShowMobal:false,
+  })
+}
 
 
   deleteBook = (id) =>{
@@ -80,6 +96,49 @@ formShow =()=>{
     })
   }
 
+  showUpdateForm =(item)=>{
+    this.setState({
+      showFlag:true,
+      title:item.title,
+      description:item.description,
+      status:item.status,
+      BookId:item._id
+    })
+  }
+
+  handleClose =()=>{
+    this.setState({
+      showFlag:false,
+    })
+  }
+
+  updateBook = (event) => {
+    event.preventDefault();
+    const { user } = this.props.auth0;
+    const email = user.email;
+    const obj = {
+      title: event.target.title.value,
+        description: event.target.description.value,
+        status:event.target.status.value,
+        authoremail:email
+
+    }
+
+    axios
+    .put(`https://lab-12-books.herokuapp.com/updateBook/${this.state.BookId}`,obj)
+    .then(result =>{
+      this.setState({
+        books:result.data,
+        showFlag : false
+        
+      })
+    })
+    .catch(err=>{
+      console.log('error in updating the data');
+    })
+  }
+
+
   /* TODO: Make a GET request to your API to fetch books for the logged in user  */
 
   render() {
@@ -88,7 +147,7 @@ formShow =()=>{
     return (
       <>
       
-       <Button variant="primary" onClick={this.formShow}>Add Book</Button>{' '}
+       <Button variant="primary" onClick={this.formShowMobalfun}>Add Book</Button>{' '}
       
         <Card className='card'>
           <Card.Body> <h1>My Favorite Books</h1>
@@ -96,34 +155,34 @@ formShow =()=>{
               This is a collection of my favorite books
             </p></Card.Body>
         </Card>
-        {this.state.formShow && (  
-        <>
+         
+        
         <BookFormModal 
         addBook={this.addBook}
-        show={this.state.formShow}
-        formShow={this.formShow}
+        formShowMobal={this.state.formShowMobal}
+        closeModal ={this.closeModal }
         />
-           </>
-        )}
+           
+        
       
+<Books
+ books={this.state. books}
+ deleteBook ={this. deleteBook}
+ showUpdateForm ={this.showUpdateForm}
+ />
+  
+  <UpdateBooks
+  updateBook={this.updateBook}
+  showFlag={this.state.showFlag}
+  handleClose={this.handleClose}
+  title={this.state.title}
+  description={this.state.description}
+  status={this.state.status}
 
-      
+  
+   />
  
-    {this.state.books.map(item =>{return( 
-    <Card className='Carousel ' >
-  <Card.Body>
-    <img 
-      className="d-block w-100"
-      src={item.status}
-      alt="First slide"
-    />
-    <Card.Body>
-      <h3>{item.title}</h3>
-      <p>{item.description}</p>
-      <button onClick={()=>this.deleteBook(item._id)} >Delete Book</button>
-    </Card.Body>
-  </Card.Body>
-</Card>)})}  
+    
  
 
 
