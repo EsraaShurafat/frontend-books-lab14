@@ -2,7 +2,7 @@ import React from 'react';
 import Header from './Header';
 // import IsLoadingAndError from './IsLoadingAndError';
 import Footer from './Footer';
-import About from './commponents/About';
+
 
 import {
   BrowserRouter as Router,
@@ -32,9 +32,7 @@ class App extends React.Component {
               <Route exact path="/profile">
               <Profile />
               </Route>
-              <Route exact path="/About">
-              <About/>
-              </Route>
+             
             </Switch>
             <Footer />
           {/* </IsLoadingAndError> */}
